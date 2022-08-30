@@ -19,7 +19,7 @@ const Cart = () => {
                         : 'fixed right-0 top-0  w-[400px] phone:w-full h-screen bg-white z-[999] rounded-tl-md rounded-bl-md translate-x-full  transition-all delay-75 ease-linear cursor-pointer  opacity-0 invisible'
                 }
             >
-                <CartItems closeCart={closeCart} />
+                {cartInfo ? <CartItem closeCart={closeCart} /> : <CartEmpty closeCart={closeCart} />}
             </div>
 
             <div className="relative">

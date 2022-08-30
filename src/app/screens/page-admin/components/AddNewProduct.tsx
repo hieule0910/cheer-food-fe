@@ -10,11 +10,6 @@ import * as yup from 'yup';
 
 import { PrimaryButton } from '../../../shared/index';
 
-import { dataCategoryAdmin } from '../../../utils/staticData';
-import { useDispatch } from 'react-redux';
-import { addNewProduct } from '../../../redux/actions/productActions';
-import { useNavigate } from 'react-router-dom';
-
 const dataInput = [
     {
         label: 'Name',
@@ -53,9 +48,7 @@ interface IFormInputs {
 const schema = yup.object({
     name: yup.string().required('This field is required'),
     desc: yup.string().required('This field is required'),
-    price: yup.number().typeError('Price must be a number'),
-    country: yup.string().required('This field is required'),
-    image: yup.string().required('This field is required')
+    price: yup.number().required('This field is required')
 });
 
 const AddNewProduct = () => {
@@ -68,68 +61,7 @@ const AddNewProduct = () => {
         resolver: yupResolver(schema)
     });
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [valueRate, setValueRate] = React.useState<number | null>(4);
-    const [category, setCategory] = React.useState(dataCategoryAdmin[0].categoryName);
-    const [slug, setSlug] = useState('');
-    const [idCategory, setIdCategory] = useState('');
-    const [idProductType, setIdProductType] = useState('');
-
-    const handleChange = (event: SelectChangeEvent) => {
-        const value = event.target.value;
-        setCategory(value);
-        const valueSlug = value.toLocaleLowerCase();
-        setSlug(valueSlug);
-        switch (value) {
-            case 'Best Foods':
-                setIdCategory(dataCategoryAdmin[0].idCategory);
-                setIdProductType(dataCategoryAdmin[0].idProductType);
-                break;
-            case 'Burgers':
-                setIdCategory(dataCategoryAdmin[1].idCategory);
-                setIdProductType(dataCategoryAdmin[1].idProductType);
-                break;
-            case 'Drinks':
-                setIdCategory(dataCategoryAdmin[2].idCategory);
-                setIdProductType(dataCategoryAdmin[2].idProductType);
-                break;
-            case 'Pizzas':
-                setIdCategory(dataCategoryAdmin[3].idCategory);
-                setIdProductType(dataCategoryAdmin[3].idProductType);
-                break;
-            default:
-                return;
-        }
-    };
-
-    const onHandleSubmit: SubmitHandler<IFormInputs> = (data: any) => {
-        console.log(data);
-        console.log(idCategory);
-        console.log(valueRate);
-
-        dispatch(
-            addNewProduct({
-                name: data.name,
-                slug: slug,
-                image: data.image,
-                desc: data.desc,
-                price: data.price,
-                rate: valueRate,
-                country: data.country,
-                category: idCategory,
-                productType: idProductType
-            })
-        );
-
-        reset({
-            name: '',
-            desc: '',
-            price: 0,
-            country: '',
-            image: ''
-        });
-    };
+    const onHandleSubmit: SubmitHandler<IFormInputs> = (data: any) => {};
     return (
         <>
             <Container>

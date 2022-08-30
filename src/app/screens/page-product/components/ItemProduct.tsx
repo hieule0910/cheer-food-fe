@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, IconButton } from '@mui/material';
 import { Notification, PrimaryButton } from '../../../shared';
+import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
