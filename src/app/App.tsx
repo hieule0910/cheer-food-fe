@@ -8,6 +8,8 @@ import { RootState } from './redux/store';
 import { userState } from './redux/reducers/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { getCart } from './redux/actions/cartActions';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
     const userLogin = useSelector<RootState, userState>((state) => state.userLogin);
