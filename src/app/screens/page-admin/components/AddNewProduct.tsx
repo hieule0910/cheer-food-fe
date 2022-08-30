@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { Container, Box, Typography, Rating, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { InputField } from '../../../shared';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { PrimaryButton } from '../../../shared/index';
-
-import { dataCategoryAdmin } from '../../../utils/staticData';
-import { useDispatch } from 'react-redux';
-import { addNewProduct } from '../../../redux/actions/productActions';
 
 const dataInput = [
     {
@@ -50,14 +48,7 @@ interface IFormInputs {
 const schema = yup.object({
     name: yup.string().required('This field is required'),
     desc: yup.string().required('This field is required'),
-    price: yup
-        .number()
-        .typeError('Price must be a number')
-        .nullable()
-        .moreThan(0, 'Floor area cannot be negative')
-        .transform((_, val) => (val !== '' ? Number(val) : null)),
-    country: yup.string().required('This field is required'),
-    image: yup.string().required('This field is required')
+    price: yup.number().required('This field is required')
 });
 
 const AddNewProduct = () => {
@@ -70,52 +61,28 @@ const AddNewProduct = () => {
         resolver: yupResolver(schema)
     });
 
-    const dispatch = useDispatch();
-    const [valueRate, setValueRate] = React.useState<number | null>(2);
-    const [category, setCategory] = React.useState(dataCategoryAdmin[0].categoryName);
-    const [idCategory, setIdCategory] = useState('');
-
-    const handleChange = (event: SelectChangeEvent) => {
-        const value = event.target.value;
-        setCategory(value);
-        console.log(value);
-        switch (value) {
-            case 'Best Foods':
-                setIdCategory(dataCategoryAdmin[0].idCategory);
-                break;
-            case 'Burgers':
-                setIdCategory(dataCategoryAdmin[1].idCategory);
-                break;
-            case 'Drinks':
-                setIdCategory(dataCategoryAdmin[2].idCategory);
-                break;
-            case 'Pizzas':
-                setIdCategory(dataCategoryAdmin[3].idCategory);
-                break;
-            default:
-                return;
-        }
-    };
-
-    const onHandleSubmit: SubmitHandler<IFormInputs> = (data: any) => {
-        console.log(data);
-        console.log(idCategory);
-        console.log(valueRate);
-        dispatch(
-            addNewProduct({
-                name: data.name,
-                image: data.image,
-                desc: data.desc,
-                price: data.price,
-                rate: valueRate,
-                country: data.country,
-                category: idCategory
-            })
-        );
-    };
+    const onHandleSubmit: SubmitHandler<IFormInputs> = (data: any) => {};
     return (
         <>
             <Container>
+                <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => navigate(-1)}
+                >
+                    Back {''}
+                    <ArrowBackIcon
+                        sx={{
+                            fontSize: '16px'
+                        }}
+                    />
+                </Typography>
                 <Box
                     sx={{
                         width: '50%'

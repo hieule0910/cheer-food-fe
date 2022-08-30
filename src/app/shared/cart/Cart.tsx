@@ -1,18 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 
-import CartEmpty from './cart-empty/CartEmpty';
-import CartItem from './cart-empty/CartItem';
+import CartItems from './cart-empty/CartItems';
 
 import { AuthContext } from '../../context/AuthContext';
-//redux
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { cartState } from '../../redux/reducers/cartReducer';
 
 const Cart = () => {
-    const getCartData = useSelector<RootState, cartState>((state) => state.getCart);
-    const { cartInfo } = getCartData;
-
     const { isShowCart, setIsShowCart } = useContext(AuthContext);
     const closeCart = () => {
         setIsShowCart(false);
@@ -27,13 +19,7 @@ const Cart = () => {
                         : 'fixed right-0 top-0  w-[400px] phone:w-full h-screen bg-white z-[999] rounded-tl-md rounded-bl-md translate-x-full  transition-all delay-75 ease-linear cursor-pointer  opacity-0 invisible'
                 }
             >
-                {/* {cartInfo ? <CartItem closeCart={closeCart} /> : <CartEmpty closeCart={closeCart} />} */}
-
-                {cartInfo ? (
-                    <>{cartInfo.length > 0 ? <CartItem closeCart={closeCart} /> : <CartEmpty closeCart={closeCart} />}</>
-                ) : (
-                    <CartEmpty closeCart={closeCart} />
-                )}
+                {cartInfo ? <CartItem closeCart={closeCart} /> : <CartEmpty closeCart={closeCart} />}
             </div>
 
             <div className="relative">

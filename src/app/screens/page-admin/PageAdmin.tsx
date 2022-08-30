@@ -1,6 +1,6 @@
 import React from 'react';
 import NavbarAdmin from '../../shared/page-header/components/navbar-admin';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import AdminSideBar from './components/AdminSideBar';
 
@@ -16,6 +16,15 @@ const PageAdmin = () => {
                 <AdminSideBar />
                 <div className="flex flex-col w-full">
                     <NavbarAdmin />
+
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            textAlign: 'center'
+                        }}
+                    >
+                        Welcome to Admin
+                    </Typography>
                 </div>
             </Box>
         </>

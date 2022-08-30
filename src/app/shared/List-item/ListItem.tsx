@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export default function ListItem() {
     const navigate = useNavigate();
 
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
 
     const handleListItemClick = (event: any, index: number) => {
         const element = event.target;

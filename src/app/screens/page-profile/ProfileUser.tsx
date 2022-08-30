@@ -1,31 +1,81 @@
 import { Container, Box, Avatar, Typography, TextField } from '@mui/material';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { userState } from '../../redux/reducers/userReducer';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addressState, userState } from '../../redux/reducers/userReducer';
 import { RootState } from '../../redux/store';
 import { PageHeader } from '../../shared';
 
-import { PrimaryButton } from '../../shared/';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-// const fieldProfile = [
-//     {
-//         fieldName: 'Display Name',
-//         type: 'username'
-//     },
-//     {
-//         fieldName: 'Address',
-//         type: 'address'
-//     },
-//     {
-//         fieldName: 'Phone',
-//         type: 'phone'
-//     }
-// ];
+// yup
+import * as yup from 'yup';
+
+import { PrimaryButton } from '../../shared/';
+import { addAddress, getAddress } from '../../redux/actions/userActions';
+import { AddressInfo } from 'net';
+
+interface IFormInputs {
+    username: string;
+    street: string;
+    town: string;
+    district: string;
+    province: string;
+    phone: number;
+}
+
+interface addressType {
+    street: any;
+    town: any;
+    district: any;
+    province: any;
+    phoneNumber: number;
+}
+
+const schema = yup.object({
+    username: yup.string().required('This field is required'),
+    street: yup.string().required('This field is required'),
+    town: yup.string().required('This field is required'),
+    district: yup.string().required('This field is required'),
+    province: yup.string().required('This field is required'),
+    phone: yup.string().required('This field is required')
+});
 
 const ProfileUser = () => {
-    const userData = useSelector<RootState, userState>((state) => state.userLogin);
+    const dispatch = useDispatch();
 
-    const { userInfo } = userData;
+    const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null;
+    const addressUser = useSelector<RootState, addressState>((state) => state.userAddress);
+    const { address } = addressUser;
+    const addressInfo = address[0];
+
+    useEffect(() => {
+        dispatch(getAddress());
+    }, []);
+
+    const initValue: addressType = {
+        district: addressInfo?.district || '',
+        town: addressInfo.town || '',
+        street: addressInfo.street || '',
+        province: addressInfo.province || '',
+        phoneNumber: addressInfo.phoneNumber || 0
+    };
+    const [userAddress, setUserAddress] = useState(initValue);
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<IFormInputs>({
+        resolver: yupResolver(schema)
+    });
+
+    const onHandleSubmit: SubmitHandler<IFormInputs> = (data: any) => {
+        console.log(data);
+
+        dispatch(addAddress(userInfo._id, data.username, data.phone, data.street, data.town, data.district, data.province));
+    };
 
     return (
         <>
@@ -36,13 +86,18 @@ const ProfileUser = () => {
                     sx={{
                         marginTop: '80px',
                         display: 'flex',
-                        gap: '16px'
+                        gap: '16px',
+                        flexDirection: { xs: 'column', md: 'row' }
                     }}
                 >
                     <Box
                         sx={{
                             display: 'flex',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            alignItems: {
+                                xs: 'center',
+                                md: 'none'
+                            }
                         }}
                     >
                         <Box
@@ -84,92 +139,321 @@ const ProfileUser = () => {
                             flex: '1'
                         }}
                     >
-                        <form action="" className="flex flex-col items-center justify-start gap-7">
+                        <form onSubmit={handleSubmit(onHandleSubmit)} className="flex flex-col items-center justify-start gap-7">
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexDirection: 'column',
                                     gap: '16px',
                                     width: '80%'
                                 }}
                             >
-                                <Typography
-                                    variant="body1"
-                                    component="span"
+                                <Box
                                     sx={{
-                                        minWidth: '100px'
+                                        display: 'flex',
+                                        alignItems: 'center'
                                     }}
                                 >
-                                    Username
-                                </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        component="span"
+                                        sx={{
+                                            minWidth: '100px'
+                                        }}
+                                    >
+                                        Username
+                                    </Typography>
 
-                                <TextField
-                                    hiddenLabel
-                                    id="user-profile"
-                                    defaultValue={userInfo?.username}
-                                    size="small"
+                                    <TextField
+                                        hiddenLabel
+                                        id="username"
+                                        defaultValue={userInfo?.username}
+                                        size="small"
+                                        sx={{
+                                            width: '50%'
+                                        }}
+                                        {...register('username')}
+                                    />
+                                </Box>
+                                <Typography
+                                    component="span"
+                                    variant="body2"
                                     sx={{
-                                        width: '50%'
+                                        color: 'red'
                                     }}
-                                />
+                                >
+                                    {errors.username?.message}
+                                </Typography>
                             </Box>
 
                             <Box
                                 sx={{
                                     display: 'flex',
+                                    flexDirection: 'column',
                                     alignItems: 'center',
                                     gap: '16px',
                                     width: '80%'
                                 }}
                             >
-                                <Typography
-                                    variant="body1"
-                                    component="span"
+                                <Box
                                     sx={{
-                                        minWidth: '100px'
+                                        display: 'flex',
+                                        alignItems: {
+                                            xs: 'flex-start',
+                                            md: 'center'
+                                        },
+                                        gap: '16px',
+                                        flexDirection: {
+                                            xs: 'column',
+                                            md: 'row'
+                                        },
+                                        width: '100%'
                                     }}
                                 >
-                                    Address
-                                </Typography>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="body1"
+                                                component="span"
+                                                sx={{
+                                                    minWidth: '100px'
+                                                }}
+                                            >
+                                                Street
+                                            </Typography>
 
-                                <TextField
-                                    hiddenLabel
-                                    id="user-profile"
-                                    defaultValue=""
-                                    size="small"
+                                            <TextField
+                                                hiddenLabel
+                                                id="street"
+                                                size="small"
+                                                defaultValue={userAddress?.street}
+                                                sx={{
+                                                    width: '50%'
+                                                }}
+                                                {...register('street')}
+                                            />
+                                        </Box>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{
+                                                color: 'red'
+                                            }}
+                                        >
+                                            {errors.street?.message}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="body1"
+                                                component="span"
+                                                sx={{
+                                                    minWidth: '100px'
+                                                }}
+                                            >
+                                                Town
+                                            </Typography>
+
+                                            <TextField
+                                                hiddenLabel
+                                                id="town"
+                                                size="small"
+                                                defaultValue={userAddress?.town}
+                                                sx={{
+                                                    width: '50%'
+                                                }}
+                                                {...register('town')}
+                                            />
+                                        </Box>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{
+                                                color: 'red'
+                                            }}
+                                        >
+                                            {errors.town?.message}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                <Box
                                     sx={{
-                                        width: '50%'
+                                        display: 'flex',
+                                        alignItems: {
+                                            xs: 'flex-start',
+                                            md: 'center'
+                                        },
+                                        gap: '16px',
+                                        flexDirection: {
+                                            xs: 'column',
+                                            md: 'row'
+                                        },
+                                        width: '100%'
                                     }}
-                                />
+                                >
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="body1"
+                                                component="span"
+                                                sx={{
+                                                    minWidth: '100px'
+                                                }}
+                                            >
+                                                District
+                                            </Typography>
+
+                                            <TextField
+                                                hiddenLabel
+                                                id="district"
+                                                size="small"
+                                                defaultValue={userAddress?.district}
+                                                sx={{
+                                                    width: '50%'
+                                                }}
+                                                {...register('district')}
+                                            />
+                                        </Box>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{
+                                                color: 'red'
+                                            }}
+                                        >
+                                            {errors.district?.message}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="body1"
+                                                component="span"
+                                                sx={{
+                                                    minWidth: '100px'
+                                                }}
+                                            >
+                                                Province
+                                            </Typography>
+
+                                            <TextField
+                                                hiddenLabel
+                                                id="province"
+                                                size="small"
+                                                defaultValue={userAddress?.province}
+                                                sx={{
+                                                    width: '50%'
+                                                }}
+                                                {...register('province')}
+                                            />
+                                        </Box>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{
+                                                color: 'red'
+                                            }}
+                                        >
+                                            {errors.province?.message}
+                                        </Typography>
+                                    </Box>
+                                </Box>
                             </Box>
 
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
                                     gap: '16px',
                                     width: '80%'
                                 }}
                             >
-                                <Typography
-                                    variant="body1"
-                                    component="span"
+                                <Box
                                     sx={{
-                                        minWidth: '100px'
+                                        display: 'flex',
+                                        alignItems: 'center'
                                     }}
                                 >
-                                    Phone
-                                </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        component="span"
+                                        sx={{
+                                            minWidth: '100px'
+                                        }}
+                                    >
+                                        Phone
+                                    </Typography>
 
-                                <TextField
-                                    hiddenLabel
-                                    id="user-profile"
-                                    defaultValue=""
-                                    size="small"
+                                    <TextField
+                                        hiddenLabel
+                                        id="phone"
+                                        size="small"
+                                        defaultValue={userAddress?.phoneNumber}
+                                        sx={{
+                                            width: '50%'
+                                        }}
+                                        {...register('phone')}
+                                    />
+                                </Box>
+                                <Typography
+                                    component="span"
+                                    variant="body2"
                                     sx={{
-                                        width: '50%'
+                                        color: 'red'
                                     }}
-                                />
+                                >
+                                    {errors.phone?.message}
+                                </Typography>
                             </Box>
 
                             <Box
@@ -184,7 +468,9 @@ const ProfileUser = () => {
                                     bgcolor="#fff"
                                     color="#111"
                                     height="50px"
-                                    onClick={() => alert('save')}
+                                    onClick={() => {
+                                        handleSubmit;
+                                    }}
                                     radius="16px"
                                     width="100px"
                                 >

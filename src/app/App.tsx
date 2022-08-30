@@ -8,11 +8,8 @@ import { RootState } from './redux/store';
 import { userState } from './redux/reducers/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import Notification from './shared/notification/Notification';
-
-// toast
+import { getCart } from './redux/actions/cartActions';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     const userLogin = useSelector<RootState, userState>((state) => state.userLogin);
@@ -24,6 +21,10 @@ function App() {
     useEffect(() => {
         userInfo?.role === 'ROLE_ADMIN' ? setCheck(true) : setCheck(false);
     }, [userInfo]);
+
+    useEffect(() => {
+        dispatch(getCart());
+    }, []);
 
     return (
         <>
