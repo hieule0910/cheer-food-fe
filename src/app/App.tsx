@@ -13,6 +13,7 @@ import Notification from './shared/notification/Notification';
 // toast
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getCart } from './redux/actions/cartActions';
 
 function App() {
     const userLogin = useSelector<RootState, userState>((state) => state.userLogin);
@@ -24,6 +25,10 @@ function App() {
     useEffect(() => {
         userInfo?.role === 'ROLE_ADMIN' ? setCheck(true) : setCheck(false);
     }, [userInfo]);
+
+    useEffect(() => {
+        dispatch(getCart());
+    }, []);
 
     return (
         <>

@@ -17,7 +17,10 @@ import {
     ADD_NEW_PRODUCT_REQUEST,
     ADD_NEW_PRODUCT_SUCCESS,
     FILTER_PRODUCT_BY_NAME,
-    FILTER_PRODUCT_BY_PRICE
+    FILTER_PRODUCT_BY_PRICE,
+    DELETE_PRODUCT_REQUEST,
+    DELETE_PRODUCT_FAILURE,
+    DELETE_PRODUCT_SUCCESS
 } from '../constants/productConstants';
 
 export const getListProduct =
@@ -84,7 +87,7 @@ export const getDetailProduct =
     };
 
 export const addNewProduct =
-    ({ name, image, desc, price, rate, country, category }: any): any =>
+    ({ name, slug, image, desc, price, rate, country, category, productType }: any): any =>
     async (dispatch: ThunkDispatch<RootState, unknown, AnyAction>, getState: () => RootState): Promise<void> => {
         try {
             dispatch({ type: ADD_NEW_PRODUCT_REQUEST });
@@ -96,17 +99,17 @@ export const addNewProduct =
             };
             // fetch data from Backend
             const { data } = await axios.post(
-                '/product',
+                '/product/',
                 {
                     name,
-                    // slug,
+                    slug,
                     image,
                     desc,
                     price,
                     rate,
                     country,
-                    category
-                    // productType
+                    category,
+                    productType
                 },
                 config
             );
@@ -117,6 +120,26 @@ export const addNewProduct =
         } catch (error) {
             dispatch({
                 type: ADD_NEW_PRODUCT_FAILURE,
+                payload: error
+            });
+        }
+    };
+
+export const deleteProduct =
+    (productID: any): any =>
+    async (dispatch: ThunkDispatch<RootState, unknown, AnyAction>, getState: () => RootState): Promise<void> => {
+        try {
+            dispatch({ type: DELETE_PRODUCT_REQUEST });
+
+            // fetch data from Backend
+            const { data } = await axios.delete(`/product/${productID}`);
+            dispatch({
+                type: DELETE_PRODUCT_SUCCESS,
+                payload: data
+            });
+        } catch (error) {
+            dispatch({
+                type: DELETE_PRODUCT_FAILURE,
                 payload: error
             });
         }

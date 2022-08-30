@@ -66,6 +66,18 @@ const CategorySlider: FC<StyleBtn> = ({ nextBtn, prevBtn }) => {
                     prevEl: `${prevBtn}`,
                     nextEl: `${nextBtn}`
                 }}
+                breakpoints={{
+                    600: {
+                        slidesPerView: 4,
+                        slidesPerGroup: 4,
+                        loopedSlides: 4
+                    },
+                    400: {
+                        slidesPerView: 2,
+                        slidesPerGroup: 2,
+                        loopedSlides: 2
+                    }
+                }}
             >
                 {dataHomeSlider.map(({ categoryImg, categoryName }) => (
                     <SwiperSlide key={categoryName}>

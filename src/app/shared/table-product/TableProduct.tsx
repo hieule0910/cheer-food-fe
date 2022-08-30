@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { RootState } from '../../redux/store';
 import { filterProductState, productState } from '../../redux/reducers/productReducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListProduct } from '../../redux/actions/productActions';
+import { getListProduct, deleteProduct } from '../../redux/actions/productActions';
 
 interface rowData {
     image: string;
@@ -30,6 +30,10 @@ export default function DenseTable() {
     const filterProductData = useSelector<RootState, filterProductState>((state) => state.filterProduct);
     const { filterProductInfo, isFetching } = filterProductData;
 
+    const handleDeleteProduct = (data: any) => {
+        dispatch(deleteProduct(data));
+    };
+
     React.useEffect(() => {
         if (!filterProductInfo) {
             dispatch(getListProduct());
@@ -37,8 +41,6 @@ export default function DenseTable() {
     }, [dispatch]);
 
     const { productInfo } = productData;
-
-    console.log(filterProductInfo);
 
     return (
         <>
@@ -100,11 +102,11 @@ export default function DenseTable() {
                                                 <TableCell align="right">{product.price}</TableCell>
                                                 <TableCell align="right">{product.desc}</TableCell>
                                                 <TableCell align="right">
-                                                    <IconButton aria-label="delete">
+                                                    <IconButton aria-label="delete" onClick={() => handleDeleteProduct(product._id)}>
                                                         <DeleteIcon />
                                                     </IconButton>
 
-                                                    <IconButton aria-label="delete">
+                                                    <IconButton aria-label="edit">
                                                         <EditIcon />
                                                     </IconButton>
                                                 </TableCell>

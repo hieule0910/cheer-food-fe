@@ -1,55 +1,30 @@
-import { Avatar, Box, FormControl, Typography } from '@mui/material';
+import { Avatar, Box, FormControl, TextField, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../redux/actions/userActions';
-import { userState } from '../../../redux/reducers/userReducer';
+import { getAddress, logout } from '../../../redux/actions/userActions';
+import { addressState, userState } from '../../../redux/reducers/userReducer';
 import { RootState } from '../../../redux/store';
-import { InputField, PrimaryButton } from '../../../shared';
-
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { PrimaryButton } from '../../../shared';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-
-interface IFormInputs {
-    address: string;
-    phone: string;
-}
-
-const schema = yup.object({
-    address: yup.string().required('This field is required'),
-    phone: yup
-        .string()
-        .required('A phone number is required')
-        .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Phone number is not valid')
-});
+import { useEffect, useState } from 'react';
 
 const CheckoutInformation = () => {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors }
-    } = useForm<IFormInputs>({
-        resolver: yupResolver(schema)
-    });
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const addressData = useSelector<RootState, addressState>((state) => state.userAddress);
     const userData = useSelector<RootState, userState>((state) => state.userLogin);
-
     const { userInfo } = userData;
 
-    const onHandleSubmit: SubmitHandler<IFormInputs> = () => {
-        reset({
-            address: '',
-            phone: ''
-        });
-    };
+    const { address } = addressData;
 
     const handleLogout = () => {
         dispatch(logout());
     };
+
+    useEffect(() => {
+        dispatch(getAddress());
+    }, [dispatch]);
 
     return (
         <>
@@ -129,67 +104,117 @@ const CheckoutInformation = () => {
                         Shipping address
                     </Typography>
 
-                    <form onSubmit={handleSubmit(onHandleSubmit)}>
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'column'
-                            }}
-                        >
-                            <InputField
-                                register={register}
-                                id="address"
-                                name="address"
-                                label="Address"
-                                errors={errors}
-                                key="address"
-                                type="text"
-                            />
-                            <InputField register={register} id="phone" name="phone" label="Phone" errors={errors} key="phone" type="text" />
-                        </Box>
-
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginTop: '20px',
-                                paddingLeft: '12px',
-                                paddingRight: '12px'
-                            }}
-                        >
-                            <Typography
-                                component="span"
-                                variant="caption"
+                    {address ? (
+                        <Box>
+                            <Box
                                 sx={{
-                                    cursor: 'pointer'
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '16px'
                                 }}
-                                onClick={() => navigate('/delivery')}
-                                className="text-yellow-light"
                             >
-                                <ArrowBackIcon
+                                <Box
                                     sx={{
-                                        fontSize: '20px'
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px'
                                     }}
-                                />
-                                {''}Back to Delivery
-                            </Typography>
+                                >
+                                    <Typography
+                                        variant="body1"
+                                        component="span"
+                                        sx={{
+                                            minWidth: '120px'
+                                        }}
+                                    >
+                                        Address
+                                    </Typography>
+                                    <TextField
+                                        hiddenLabel
+                                        id="address"
+                                        defaultValue={` ${address[0].street},${address[0].district},${address[0].town},${address[0].province}`}
+                                        size="small"
+                                        sx={{
+                                            width: '70%'
+                                        }}
+                                    />
+                                </Box>
 
-                            <PrimaryButton
-                                border={'none'}
-                                bgcolor={'#FFCE00'}
-                                height={'40px'}
-                                onClick={() => console.log('submit')}
-                                radius={'12px'}
-                                width={'30%'}
-                                color={'#FFF'}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px'
+                                    }}
+                                >
+                                    <Typography
+                                        variant="body1"
+                                        component="span"
+                                        sx={{
+                                            minWidth: '120px'
+                                        }}
+                                    >
+                                        Numberphone
+                                    </Typography>
+                                    <TextField
+                                        hiddenLabel
+                                        id="phone"
+                                        defaultValue={`(+84) ${address[0].phoneNumber}`}
+                                        size="small"
+                                        sx={{
+                                            width: '70%'
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginTop: '20px',
+                                    paddingLeft: '12px',
+                                    paddingRight: '12px'
+                                }}
                             >
-                                Checkout
-                            </PrimaryButton>
+                                <Typography
+                                    component="span"
+                                    variant="caption"
+                                    sx={{
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => navigate('/delivery')}
+                                    className="text-yellow-light"
+                                >
+                                    <ArrowBackIcon
+                                        sx={{
+                                            fontSize: '20px'
+                                        }}
+                                    />
+                                    {''}Back to Delivery
+                                </Typography>
+
+                                <PrimaryButton
+                                    border={'none'}
+                                    bgcolor={'#FFCE00'}
+                                    height={'40px'}
+                                    onClick={() => console.log('submit')}
+                                    radius={'12px'}
+                                    width={'30%'}
+                                    color={'#FFF'}
+                                >
+                                    Checkout
+                                </PrimaryButton>
+                            </Box>
                         </Box>
-                    </form>
+                    ) : (
+                        <>
+                            <Typography variant="h5">Please update address</Typography>
+                        </>
+                    )}
                 </Box>
             </Box>
         </>

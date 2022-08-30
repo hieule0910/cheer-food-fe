@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, IconButton } from '@mui/material';
-import { PrimaryButton } from '../../../shared';
+import { Notification, PrimaryButton } from '../../../shared';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -21,7 +21,7 @@ const ItemProduct = () => {
     const [qntProduct, setQntProduct] = useState(1);
     const { setShowDetail } = useContext(AuthContext);
 
-    const { isFetching, productInfo } = detailProduct;
+    const { productInfo } = detailProduct;
 
     useEffect(() => {
         dispatch(getDetailProduct(id));
@@ -43,6 +43,8 @@ const ItemProduct = () => {
     const handleAddToCart = async () => {
         await dispatch(addToCart(productInfo, productInfo?.name, productInfo?.image, productInfo?.price, qntProduct));
         dispatch(getCart());
+
+        Notification();
     };
 
     return (

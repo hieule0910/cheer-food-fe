@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Container, Box, Typography, Rating, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { InputField } from '../../../shared';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -11,6 +13,7 @@ import { PrimaryButton } from '../../../shared/index';
 import { dataCategoryAdmin } from '../../../utils/staticData';
 import { useDispatch } from 'react-redux';
 import { addNewProduct } from '../../../redux/actions/productActions';
+import { useNavigate } from 'react-router-dom';
 
 const dataInput = [
     {
@@ -50,12 +53,7 @@ interface IFormInputs {
 const schema = yup.object({
     name: yup.string().required('This field is required'),
     desc: yup.string().required('This field is required'),
-    price: yup
-        .number()
-        .typeError('Price must be a number')
-        .nullable()
-        .moreThan(0, 'Floor area cannot be negative')
-        .transform((_, val) => (val !== '' ? Number(val) : null)),
+    price: yup.number().typeError('Price must be a number'),
     country: yup.string().required('This field is required'),
     image: yup.string().required('This field is required')
 });
@@ -70,27 +68,35 @@ const AddNewProduct = () => {
         resolver: yupResolver(schema)
     });
 
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [valueRate, setValueRate] = React.useState<number | null>(2);
+    const [valueRate, setValueRate] = React.useState<number | null>(4);
     const [category, setCategory] = React.useState(dataCategoryAdmin[0].categoryName);
+    const [slug, setSlug] = useState('');
     const [idCategory, setIdCategory] = useState('');
+    const [idProductType, setIdProductType] = useState('');
 
     const handleChange = (event: SelectChangeEvent) => {
         const value = event.target.value;
         setCategory(value);
-        console.log(value);
+        const valueSlug = value.toLocaleLowerCase();
+        setSlug(valueSlug);
         switch (value) {
             case 'Best Foods':
                 setIdCategory(dataCategoryAdmin[0].idCategory);
+                setIdProductType(dataCategoryAdmin[0].idProductType);
                 break;
             case 'Burgers':
                 setIdCategory(dataCategoryAdmin[1].idCategory);
+                setIdProductType(dataCategoryAdmin[1].idProductType);
                 break;
             case 'Drinks':
                 setIdCategory(dataCategoryAdmin[2].idCategory);
+                setIdProductType(dataCategoryAdmin[2].idProductType);
                 break;
             case 'Pizzas':
                 setIdCategory(dataCategoryAdmin[3].idCategory);
+                setIdProductType(dataCategoryAdmin[3].idProductType);
                 break;
             default:
                 return;
@@ -101,21 +107,50 @@ const AddNewProduct = () => {
         console.log(data);
         console.log(idCategory);
         console.log(valueRate);
+
         dispatch(
             addNewProduct({
                 name: data.name,
+                slug: slug,
                 image: data.image,
                 desc: data.desc,
                 price: data.price,
                 rate: valueRate,
                 country: data.country,
-                category: idCategory
+                category: idCategory,
+                productType: idProductType
             })
         );
+
+        reset({
+            name: '',
+            desc: '',
+            price: 0,
+            country: '',
+            image: ''
+        });
     };
     return (
         <>
             <Container>
+                <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => navigate(-1)}
+                >
+                    Back {''}
+                    <ArrowBackIcon
+                        sx={{
+                            fontSize: '16px'
+                        }}
+                    />
+                </Typography>
                 <Box
                     sx={{
                         width: '50%'

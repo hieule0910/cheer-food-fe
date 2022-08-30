@@ -1,17 +1,15 @@
-import React, { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { PageHeader, FilterBar, RestaurantSilder } from '../../shared';
 import { Container, Box } from '@mui/material';
-
 import DeleveryCategorySlider from './components/delivery-category-slide/DeleveryCategorySlider';
-import { getCart } from '../../redux/actions/cartActions';
-import { useDispatch } from 'react-redux';
+
+import { AuthContext } from '../../context/AuthContext';
 
 const PageDelivery = () => {
-    const dispatch = useDispatch();
+    const { setIsShowCart } = useContext(AuthContext);
     useEffect(() => {
-        dispatch(getCart());
-    }, []);
-
+        setIsShowCart(false);
+    }, [setIsShowCart]);
     return (
         <>
             <PageHeader />

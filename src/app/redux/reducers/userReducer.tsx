@@ -7,11 +7,17 @@ import {
     USER_LOGOUT,
     USER_REGISTER_REQUEST,
     USER_REGISTER_SUCCESS,
-    USER_REGISTER_FAILED
+    USER_REGISTER_FAILED,
+    USER_GET_ADDRESS,
+    USER_GET_ONE_ADDRESS,
+    USER_ADD_ADDRESS,
+    USER_UPDATE_ADDRESS,
+    USER_REMOVE_ADDRESS,
+    USER_FOR_COMMENT
 } from '../constants/userConstants';
 
 export interface userInfo {
-    _id?: string;
+    _id: string;
     username?: string;
     email?: string;
     password?: string;
@@ -24,6 +30,21 @@ export interface userState {
     userInfo?: userInfo | null;
     isFetching?: boolean;
     error?: boolean;
+}
+
+export interface addressInfo {
+    _id: string;
+    user: string;
+    fullName: string;
+    phoneNumber: number;
+    street: string;
+    town: string;
+    district: string;
+    province: string;
+}
+
+export interface addressState {
+    address: Array<addressInfo>;
 }
 
 export const userLoginReducer = (state: userState, action: AnyAction) => {
@@ -56,6 +77,18 @@ export const userLoginReducer = (state: userState, action: AnyAction) => {
     }
 };
 
+export const userReducer = (state = { userInfo: [] }, action: AnyAction) => {
+    switch (action.type) {
+        case USER_FOR_COMMENT: {
+            return {
+                userInfo: [...state.userInfo, action.payload]
+            };
+        }
+        default:
+            return { ...state };
+    }
+};
+
 export const userRegisterReducer = (state: userState, action: AnyAction) => {
     switch (action.type) {
         case USER_REGISTER_REQUEST:
@@ -79,6 +112,33 @@ export const userRegisterReducer = (state: userState, action: AnyAction) => {
                 userInfo: null,
                 isFetching: false,
                 error: false
+            };
+        }
+        default:
+            return { ...state };
+    }
+};
+
+export const userAddressReducer = (state: addressState, action: AnyAction) => {
+    switch (action.type) {
+        case USER_GET_ADDRESS: {
+            return {
+                address: action.payload
+            };
+        }
+        case USER_GET_ONE_ADDRESS: {
+            return {
+                address: action.payload
+            };
+        }
+        case USER_ADD_ADDRESS: {
+            return {
+                address: action.payload
+            };
+        }
+        case USER_REMOVE_ADDRESS: {
+            return {
+                address: state.address?.filter((item: any) => item._id !== action.payload.id)
             };
         }
         default:

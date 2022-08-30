@@ -5,11 +5,20 @@ import AdminProduct from '../screens/page-admin/components/AdminProduct';
 
 import AdminLayout from '../layout/AdminLayout';
 import AddNewProduct from '../screens/page-admin/components/AddNewProduct';
+import AdminDashboard from '../screens/page-admin/components/AdminDashboard';
 
 const Admin = () => {
     return (
         <Routes>
             <Route path="/" element={<PageAdmin />} />
+            <Route
+                path="/dashboard"
+                element={
+                    <AdminLayout>
+                        <AdminDashboard />
+                    </AdminLayout>
+                }
+            />
             <Route
                 path="/products"
                 element={
